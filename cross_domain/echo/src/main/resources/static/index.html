@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>跨域测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- 引入样式 -->
+    <link href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" rel="stylesheet">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <el-main>
+        <el-row>
+            <el-col :span="24">
+                <div class="grid-content bg-purple-dark">get请求</div>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="16">
+                <div class="grid-content bg-purple-dark">
+                    <el-input placeholder="请输入内容" v-model="getValue"></el-input>
+                </div>
+            </el-col>
+            <el-col :span="8">
+                <div class="grid-content bg-purple">
+                    <el-button type="primary" v-on:click="getMethod">发送</el-button>
+                </div>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="24">
+                <div class="grid-content bg-purple-dark">
+                    <el-input v-model="getResponse"></el-input>
+                </div>
+            </el-col>
+        </el-row>
+    </el-main>
+
+    <el-main>
+        <el-row>
+            <el-col :span="24">
+                <div class="grid-content bg-purple-dark">自定义请求头的get</div>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="16">
+                <div class="grid-content bg-purple-dark">
+                    <el-input placeholder="请输入内容" v-model="headerGet"></el-input>
+                </div>
+            </el-col>
+            <el-col :span="8">
+                <div class="grid-content bg-purple">
+                    <el-button type="primary" v-on:click="requestHeaderGet">发送</el-button>
+                </div>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="24">
+                <div class="grid-content bg-purple-dark">
+                    <el-input v-model="headerGetResponse"></el-input>
+                </div>
+            </el-col>
+        </el-row>
+    </el-main>
+
+    <el-main>
+        <el-row>
+            <el-col :span="24">
+                <div class="grid-content bg-purple-dark">post请求</div>
+            </el-col>
+        </el-row>
+        <el-form :model="postValue" label-width="80px" ref="postValue">
+            <el-form-item label="姓名">
+                <el-input v-model="postValue.name"></el-input>
+            </el-form-item>
+            <el-form-item label="年龄">
+                <el-input v-model="postValue.age"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button @click="onSubmit" type="primary">发送</el-button>
+            </el-form-item>
+        </el-form>
+        <el-row>
+            <el-col :span="24">
+                <div class="grid-content bg-purple-dark">
+                    <el-input v-model="postResponse"></el-input>
+                </div>
+            </el-col>
+        </el-row>
+    </el-main>
+
+    <el-main>
+        <el-row>
+            <el-col :span="24">
+                <div class="grid-content bg-purple-dark">自定义请求头post请求</div>
+            </el-col>
+        </el-row>
+        <el-form :model="headerPostValue" label-width="80px" ref="headerPostValue">
+            <el-form-item label="姓名">
+                <el-input v-model="headerPostValue.name"></el-input>
+            </el-form-item>
+            <el-form-item label="年龄">
+                <el-input v-model="headerPostValue.age"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button @click="onSubmit2" type="primary">发送</el-button>
+            </el-form-item>
+        </el-form>
+        <el-row>
+            <el-col :span="24">
+                <div class="grid-content bg-purple-dark">
+                    <el-input v-model="headerResponse"></el-input>
+                </div>
+            </el-col>
+        </el-row>
+    </el-main>
+</div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            getValue: '',
+            getResponse: '',
+            headerGet: '',
+            headerGetResponse: '',
+            postValue: {
+                name: '',
+                age: 0
+            },
+            postResponse: '',
+            headerPostValue: {
+                name: '',
+                age: 0
+            },
+            headerResponse: ''
+        },
+        methods: {
+            getMethod: function (event) {
+                axios.get('/get', {
+                    params: {
+                        str: this.getValue
+                    }
+                })
+                    .then((response) => {
+                        this.getResponse = response.data
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            },
+            onSubmit: function (event) {
+                axios.post('/post', this.postValue)
+                    .then((response) => {
+                        this.postResponse = response.data;
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            },
+            requestHeaderGet: function (event) {
+                axios.get('/header/get', {
+                    params: {
+                        str: this.headerGet
+                    },
+                    headers: {'Authorization': 'lovewl'},
+                })
+                    .then((response) => {
+                        this.headerGetResponse = response.data
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            },
+            onSubmit2: function (event) {
+                axios({
+                    method: 'post',
+                    url: '/header/post',
+                    data: this.headerPostValue,
+                    headers: {"Authorization": "123"}
+                })
+                    .then((response) => {
+                        this.headerResponse = response.data;
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
+        }
+    })
+</script>
+</html>
